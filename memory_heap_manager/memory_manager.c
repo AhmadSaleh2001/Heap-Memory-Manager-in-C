@@ -74,6 +74,10 @@ void mm_instantiate_vm_page_family(char * struct_name, int size) {
     memcpy(&first_familiy_page->vm_page_family[first_empty_memory_index], struct_name, MM_MAX_STRUCT_NAME);
 }
 
-void mm_print_vm_page_families() {
+void mm_print_registered_page_families() {
     print_vm_page_families(first_familiy_page);
+}
+
+vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
+    
 }

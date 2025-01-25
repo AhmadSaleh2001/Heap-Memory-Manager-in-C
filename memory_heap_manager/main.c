@@ -21,7 +21,7 @@ int main() {
     MM_REGISTER_STRUCT(std_t);
     MM_REGISTER_STRUCT(emp_t);
 
-    mm_print_vm_page_families();
+    mm_print_registered_page_families();
 
     return 0;
 }
