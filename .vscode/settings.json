@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "mman.h": "c",
+        "vm_page_family.h": "c",
+        "__bit_reference": "cpp",
+        "bitset": "cpp",
+        "vm_page_families.h": "c",
+        "memory_manager.h": "c"
+    }
+}

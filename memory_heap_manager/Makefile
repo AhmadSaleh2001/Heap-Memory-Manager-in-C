@@ -6,7 +6,7 @@ CFLAGS = -Wall -g
 EXE = main.exe
 
 # Source files
-SRC = main.c vm_page_family.c
+SRC = vm_page_family.c vm_page_families.c memory_manager.c main.c
 
 # Default target
 all: $(EXE)

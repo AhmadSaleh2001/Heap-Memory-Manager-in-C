@@ -1,8 +1,11 @@
 #pragma once
+#include <unistd.h>
+#include <sys/mman.h>
+#include <memory.h>
 #include "vm_page_family.h"
 
 #define MM_MAX_FAMILIES_PER_PAGE \
-    (SYSTEM_PAGE_SIZE - sizeof(vm_page_families_t)) / sizeof(vm_page_family_t)
+    (getpagesize() - sizeof(vm_page_families_t)) / sizeof(vm_page_family_t)
 
 #define ITERATE_PAGE_FAMILY_BEGIN(vm_page_family_ptr, curr) { \
     int count = 0; \
@@ -15,3 +18,5 @@ typedef struct vm_page_families_ {
     vm_page_family_t vm_page_family[];
 
 } vm_page_families_t;
+
+void print_vm_page_families(vm_page_families_t * vm_page_families);
