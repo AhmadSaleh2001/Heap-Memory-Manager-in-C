@@ -23,5 +23,8 @@ int main() {
 
     mm_print_registered_page_families();
 
+    vm_page_family_t * search = lookup_page_family_by_name("std_t");
+    printf("%p\n", search);
+
     return 0;
 }

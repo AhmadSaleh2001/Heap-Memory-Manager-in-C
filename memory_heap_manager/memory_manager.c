@@ -79,5 +79,15 @@ void mm_print_registered_page_families() {
 }
 
 vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
-    
+    vm_page_families_t * current_page_families = NULL;
+    ITERATE_PAGE_FAMILIES_BEGIN(first_familiy_page, current_page_families) {
+        vm_page_family_t * current_page_family = NULL;
+        ITERATE_PAGE_FAMILY_BEGIN(current_page_families->vm_page_family, current_page_family) {
+            if(strcmp(current_page_family->struct_name, struct_name) == 0) {
+                return current_page_family;
+            }
+        } ITERATE_PAGE_FAMILY_END(current_page_families, current_page_family)
+    } ITERATE_PAGE_FAMILIES_END(vm_page_families, current_page_families, current_page_family)
+
+    return NULL;
 }
