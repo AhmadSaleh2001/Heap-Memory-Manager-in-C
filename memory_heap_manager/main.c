@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "memory_manager.h"
+#include "block_metadata.h"
 
 typedef struct std_
 {
@@ -16,7 +17,7 @@ typedef struct emp_
 } emp_t;
 
 int main() {
-    
+
     init_mmap();
     MM_REGISTER_STRUCT(std_t);
     MM_REGISTER_STRUCT(emp_t);

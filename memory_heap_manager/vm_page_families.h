@@ -23,7 +23,6 @@
 typedef struct vm_page_families_ {
     struct vm_page_families_ *next;
     vm_page_family_t vm_page_family[];
-
 } vm_page_families_t;
 
 void print_vm_page_families(vm_page_families_t * vm_page_families);

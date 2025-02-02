@@ -71,7 +71,7 @@ void mm_instantiate_vm_page_family(char * struct_name, int size) {
     }
 
     first_familiy_page->vm_page_family[first_empty_memory_index].size = size;
-    memcpy(&first_familiy_page->vm_page_family[first_empty_memory_index], struct_name, MM_MAX_STRUCT_NAME);
+    memcpy(&first_familiy_page->vm_page_family[first_empty_memory_index].struct_name, struct_name, MM_MAX_STRUCT_NAME);
 }
 
 void mm_print_registered_page_families() {
@@ -90,4 +90,12 @@ vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
     } ITERATE_PAGE_FAMILIES_END(vm_page_families, current_page_families, current_page_family)
 
     return NULL;
+}
+
+void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b) {
+    assert(a->is_free && b->is_free);
+    a->next = b->next;
+    if(b->next)b->prev = a;
+    a->block_size+=sizeof(block_metadata_t) + b->block_size;
+    free(b);
 }
