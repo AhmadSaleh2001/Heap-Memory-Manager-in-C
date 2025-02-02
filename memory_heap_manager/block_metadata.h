@@ -20,9 +20,9 @@
 
 typedef struct block_metadata_
 {
-    bool is_free;
-    uint32_t block_size;
     struct block_metadata_ * prev;
     struct block_metadata_ * next;
+    bool is_free;
+    uint32_t block_size;
     int offset;
 } block_metadata_t;

@@ -2,19 +2,23 @@
 triple:          'arm64-apple-darwin'
 binary-path:     main.exe
 relocations:
-  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _print_page_family_info, symObjAddr: 0x0, symBinAddr: 0x100003768, symSize: 0x54 }
-  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _print_page_family_info, symObjAddr: 0x0, symBinAddr: 0x100003768, symSize: 0x54 }
-  - { offsetInCU: 0x26, offset: 0xCF, size: 0x8, addend: 0x0, symName: _print_vm_page_families, symObjAddr: 0x0, symBinAddr: 0x1000037BC, symSize: 0xF0 }
-  - { offsetInCU: 0xC6, offset: 0x16F, size: 0x8, addend: 0x0, symName: _print_vm_page_families, symObjAddr: 0x0, symBinAddr: 0x1000037BC, symSize: 0xF0 }
-  - { offsetInCU: 0x26, offset: 0x1FF, size: 0x8, addend: 0x0, symName: _init_mmap, symObjAddr: 0x0, symBinAddr: 0x1000038AC, symSize: 0x1C }
-  - { offsetInCU: 0x3F, offset: 0x218, size: 0x8, addend: 0x0, symName: _first_familiy_page, symObjAddr: 0x14B8, symBinAddr: 0x100008000, symSize: 0x0 }
-  - { offsetInCU: 0xE2, offset: 0x2BB, size: 0x8, addend: 0x0, symName: _SYSTEM_PAGE_SIZE, symObjAddr: 0x14C0, symBinAddr: 0x100008008, symSize: 0x0 }
-  - { offsetInCU: 0xFC, offset: 0x2D5, size: 0x8, addend: 0x0, symName: _init_mmap, symObjAddr: 0x0, symBinAddr: 0x1000038AC, symSize: 0x1C }
-  - { offsetInCU: 0x111, offset: 0x2EA, size: 0x8, addend: 0x0, symName: _mm_instantiate_vm_page_family, symObjAddr: 0x1C, symBinAddr: 0x1000038C8, symSize: 0x238 }
-  - { offsetInCU: 0x197, offset: 0x370, size: 0x8, addend: 0x0, symName: _mm_get_new_vm_page_from_kernel, symObjAddr: 0x254, symBinAddr: 0x100003B00, symSize: 0x94 }
-  - { offsetInCU: 0x1CD, offset: 0x3A6, size: 0x8, addend: 0x0, symName: _mm_print_registered_page_families, symObjAddr: 0x2E8, symBinAddr: 0x100003B94, symSize: 0x1C }
-  - { offsetInCU: 0x1E2, offset: 0x3BB, size: 0x8, addend: 0x0, symName: _lookup_page_family_by_name, symObjAddr: 0x304, symBinAddr: 0x100003BB0, symSize: 0x120 }
-  - { offsetInCU: 0x250, offset: 0x429, size: 0x8, addend: 0x0, symName: _mm_union_free_blocks, symObjAddr: 0x424, symBinAddr: 0x100003CD0, symSize: 0xE4 }
-  - { offsetInCU: 0x26, offset: 0x4F9, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003DB4, symSize: 0x78 }
-  - { offsetInCU: 0x41, offset: 0x514, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003DB4, symSize: 0x78 }
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _print_page_family_info, symObjAddr: 0x0, symBinAddr: 0x100003424, symSize: 0x54 }
+  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _print_page_family_info, symObjAddr: 0x0, symBinAddr: 0x100003424, symSize: 0x54 }
+  - { offsetInCU: 0x26, offset: 0xCF, size: 0x8, addend: 0x0, symName: _init_mmap, symObjAddr: 0x0, symBinAddr: 0x100003478, symSize: 0x1C }
+  - { offsetInCU: 0x4D, offset: 0xF6, size: 0x8, addend: 0x0, symName: _SYSTEM_PAGE_SIZE, symObjAddr: 0x1ED8, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offsetInCU: 0x74, offset: 0x11D, size: 0x8, addend: 0x0, symName: _first_family_page, symObjAddr: 0x1EE0, symBinAddr: 0x100008008, symSize: 0x0 }
+  - { offsetInCU: 0x1DB, offset: 0x284, size: 0x8, addend: 0x0, symName: _init_mmap, symObjAddr: 0x0, symBinAddr: 0x100003478, symSize: 0x1C }
+  - { offsetInCU: 0x1F0, offset: 0x299, size: 0x8, addend: 0x0, symName: _get_vm_page_families, symObjAddr: 0x1C, symBinAddr: 0x100003494, symSize: 0xC }
+  - { offsetInCU: 0x209, offset: 0x2B2, size: 0x8, addend: 0x0, symName: _mm_instantiate_vm_page_family, symObjAddr: 0x28, symBinAddr: 0x1000034A0, symSize: 0x244 }
+  - { offsetInCU: 0x28F, offset: 0x338, size: 0x8, addend: 0x0, symName: _mm_get_new_vm_page_from_kernel, symObjAddr: 0x26C, symBinAddr: 0x1000036E4, symSize: 0x94 }
+  - { offsetInCU: 0x2C5, offset: 0x36E, size: 0x8, addend: 0x0, symName: _mm_allocate_vm_page, symObjAddr: 0x300, symBinAddr: 0x100003778, symSize: 0xC8 }
+  - { offsetInCU: 0x2FB, offset: 0x3A4, size: 0x8, addend: 0x0, symName: _mm_delete_vm_page, symObjAddr: 0x3C8, symBinAddr: 0x100003840, symSize: 0x10C }
+  - { offsetInCU: 0x31F, offset: 0x3C8, size: 0x8, addend: 0x0, symName: _mm_return_vm_page_to_kernel, symObjAddr: 0x4D4, symBinAddr: 0x10000394C, symSize: 0x64 }
+  - { offsetInCU: 0x351, offset: 0x3FA, size: 0x8, addend: 0x0, symName: _mm_print_registered_page_families, symObjAddr: 0x538, symBinAddr: 0x1000039B0, symSize: 0x1C }
+  - { offsetInCU: 0x366, offset: 0x40F, size: 0x8, addend: 0x0, symName: _print_vm_page_families, symObjAddr: 0x554, symBinAddr: 0x1000039CC, symSize: 0xFC }
+  - { offsetInCU: 0x3D0, offset: 0x479, size: 0x8, addend: 0x0, symName: _lookup_page_family_by_name, symObjAddr: 0x650, symBinAddr: 0x100003AC8, symSize: 0x12C }
+  - { offsetInCU: 0x43E, offset: 0x4E7, size: 0x8, addend: 0x0, symName: _mm_union_free_blocks, symObjAddr: 0x77C, symBinAddr: 0x100003BF4, symSize: 0xDC }
+  - { offsetInCU: 0x470, offset: 0x519, size: 0x8, addend: 0x0, symName: _mm_is_page_free, symObjAddr: 0x858, symBinAddr: 0x100003CD0, symSize: 0x74 }
+  - { offsetInCU: 0x26, offset: 0x571, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003D44, symSize: 0xB0 }
+  - { offsetInCU: 0x1A0, offset: 0x6EB, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003D44, symSize: 0xB0 }
 ...

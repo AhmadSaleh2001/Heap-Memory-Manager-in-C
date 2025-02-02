@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "vm_page_family.h"
 #include "memory_manager.h"
 #include "block_metadata.h"
 
@@ -23,9 +24,14 @@ int main() {
     MM_REGISTER_STRUCT(emp_t);
 
     mm_print_registered_page_families();
+    vm_page_families_t * vm_page_families = get_vm_page_families();
+    vm_page_t * vm1 = mm_allocate_vm_page(vm_page_families);
+    vm_page_t * vm2 = mm_allocate_vm_page(vm_page_families);
 
-    vm_page_family_t * search = lookup_page_family_by_name("std_t");
-    printf("%p\n", search);
+    vm_page_t * curr = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page_families->first_vm_page, curr) {
+        printf("page\n");
+    } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr)
 
     return 0;
 }
