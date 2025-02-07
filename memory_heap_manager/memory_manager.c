@@ -99,6 +99,35 @@ vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
     return vm_page;
 }
 
+void print_vm_pages(vm_page_family_t * vm_page_family) {
+    vm_page_t * curr_vm_page = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
+        block_metadata_t * curr_block = NULL;
+        ITERATE_VM_PAGE_BLOCKS_BEGIN(curr_vm_page->blocks, curr_block) {
+            print_block_metadata(curr_block);
+            printf("\n");
+        } ITERATE_VM_PAGE_BLOCKS_END(curr_vm_page->blocks, curr_block)
+        printf("--------\n");
+    } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
+}
+
+block_metadata_t * get_first_empty_block(vm_page_family_t * vm_page_family) {
+    vm_page_t * curr_vm_page = NULL;
+    block_metadata_t * first_free_enough_block = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
+        block_metadata_t * curr_block = NULL;
+        ITERATE_VM_PAGE_BLOCKS_BEGIN(curr_vm_page->blocks, curr_block) {
+            if(curr_block->is_free && curr_block->block_size >= sizeof(block_metadata_t) + vm_page_family->size) {
+                first_free_enough_block = curr_block;
+                break;
+            }
+        } ITERATE_VM_PAGE_BLOCKS_END(curr_vm_page->blocks, curr_block)
+        if(first_free_enough_block)break;
+    } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
+
+    return first_free_enough_block;
+}
+
 void mm_delete_vm_page(vm_page_t * vm_page) {
 
     vm_page_family_t * vm_page_family = vm_page->vm_page_familiy;
@@ -165,4 +194,30 @@ void print_vm_page_families(vm_page_families_t * vm_page_families) {
 void print_page_family_info(vm_page_family_t* vm_page_family) {
     printf("struct name: %s\n", vm_page_family->struct_name);
     printf("struct size: %d\n", vm_page_family->size);
+}
+
+void mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block) {
+    int old_offset = free_block->offset;
+    int total_size = sizeof(block_metadata_t) + vm_page_family->size;
+    free_block->offset += total_size;
+    free_block->block_size -= total_size;
+
+    // print_block_metadata(free_block);
+    // printf("old block offset: %d\n", (char*)free_block);
+    // printf("\n");
+
+    block_metadata_t * new_block = (char*)free_block;
+    memcpy((char*)free_block + total_size, (char*)free_block, sizeof(block_metadata_t));
+    block_metadata_t * old_free_block = (char*)free_block + total_size;
+
+    new_block->is_free = false;
+    new_block->block_size = vm_page_family->size;
+    new_block->next = new_block->prev = NULL;
+    new_block->offset = old_offset;
+
+    // print_block_metadata(old_free_block);
+    // print_block_metadata(new_block);
+
+
+    mm_bind_blocks_for_allocation(old_free_block, new_block);
 }
