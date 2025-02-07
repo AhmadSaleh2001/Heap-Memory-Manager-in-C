@@ -15,12 +15,22 @@ void * xmalloc(char * struct_name) {
         printf("Struct with name %s not registerd\n", struct_name);
         exit(0);
     }
-    block_metadata_t * free_block = first_fit_block(page_family);
+    block_metadata_t * free_block = first_fit_block(page_family, 1);
     if(free_block == NULL)mm_allocate_vm_page(page_family);
     
-    free_block = first_fit_block(page_family);
+    free_block = first_fit_block(page_family, 1);
 
-    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block);
+    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block, 1);
+}
+
+void * xcalloc(char * struct_name, int units) {
+    vm_page_family_t * page_family = lookup_page_family_by_name(struct_name);
+    if(page_family == NULL) {
+        printf("Struct with name %s not registerd\n", struct_name);
+        exit(0);
+    }
+    block_metadata_t * free_block = first_fit_block(page_family, units);
+    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block, units);
 }
 
 void init_mmap() {
@@ -125,13 +135,13 @@ void print_vm_pages(vm_page_family_t * vm_page_family) {
     } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
 }
 
-block_metadata_t * first_fit_block(vm_page_family_t * vm_page_family) {
+block_metadata_t * first_fit_block(vm_page_family_t * vm_page_family, int units) {
     vm_page_t * curr_vm_page = NULL;
     block_metadata_t * first_free_enough_block = NULL;
     ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
         block_metadata_t * curr_block = NULL;
         ITERATE_VM_PAGE_BLOCKS_BEGIN(curr_vm_page->blocks, curr_block) {
-            if(curr_block->is_free && curr_block->block_size >= sizeof(block_metadata_t) + vm_page_family->size) {
+            if(curr_block->is_free && curr_block->block_size >= sizeof(block_metadata_t) + units*vm_page_family->size) {
                 first_free_enough_block = curr_block;
                 break;
             }
@@ -210,9 +220,9 @@ void print_page_family_info(vm_page_family_t* vm_page_family) {
     printf("struct size: %d\n", vm_page_family->size);
 }
 
-void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block) {
+void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units) {
     int old_offset = free_block->offset;
-    int total_size = sizeof(block_metadata_t) + vm_page_family->size;
+    int total_size = sizeof(block_metadata_t) + units*vm_page_family->size;
     free_block->offset += total_size;
     free_block->block_size -= total_size;
 
@@ -225,7 +235,7 @@ void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_
     block_metadata_t * old_free_block = (char*)free_block + total_size;
 
     new_block->is_free = false;
-    new_block->block_size = vm_page_family->size;
+    new_block->block_size = vm_page_family->size*units;
     new_block->next = new_block->prev = NULL;
     new_block->offset = old_offset;
 

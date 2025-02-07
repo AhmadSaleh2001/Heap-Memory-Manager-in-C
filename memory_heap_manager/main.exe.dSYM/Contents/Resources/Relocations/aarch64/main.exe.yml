@@ -1,0 +1,40 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     main.exe
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _xmalloc, symObjAddr: 0x0, symBinAddr: 0x1000027B4, symSize: 0xB0 }
+  - { offsetInCU: 0x4D, offset: 0x4D, size: 0x8, addend: 0x0, symName: _SYSTEM_PAGE_SIZE, symObjAddr: 0x2B08, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offsetInCU: 0x74, offset: 0x74, size: 0x8, addend: 0x0, symName: _first_family_page, symObjAddr: 0x2B10, symBinAddr: 0x100008008, symSize: 0x0 }
+  - { offsetInCU: 0x1E5, offset: 0x1E5, size: 0x8, addend: 0x0, symName: _xmalloc, symObjAddr: 0x0, symBinAddr: 0x1000027B4, symSize: 0xB0 }
+  - { offsetInCU: 0x229, offset: 0x229, size: 0x8, addend: 0x0, symName: _lookup_page_family_by_name, symObjAddr: 0xB0, symBinAddr: 0x100002864, symSize: 0x12C }
+  - { offsetInCU: 0x297, offset: 0x297, size: 0x8, addend: 0x0, symName: _first_fit_block, symObjAddr: 0x1DC, symBinAddr: 0x100002990, symSize: 0x134 }
+  - { offsetInCU: 0x321, offset: 0x321, size: 0x8, addend: 0x0, symName: _mm_allocate_vm_page, symObjAddr: 0x310, symBinAddr: 0x100002AC4, symSize: 0xC8 }
+  - { offsetInCU: 0x357, offset: 0x357, size: 0x8, addend: 0x0, symName: _mm_add_free_block_metadata_to_free_block_list, symObjAddr: 0x3D8, symBinAddr: 0x100002B8C, symSize: 0x140 }
+  - { offsetInCU: 0x3D3, offset: 0x3D3, size: 0x8, addend: 0x0, symName: _xcalloc, symObjAddr: 0x518, symBinAddr: 0x100002CCC, symSize: 0x80 }
+  - { offsetInCU: 0x425, offset: 0x425, size: 0x8, addend: 0x0, symName: _init_mmap, symObjAddr: 0x598, symBinAddr: 0x100002D4C, symSize: 0x1C }
+  - { offsetInCU: 0x43A, offset: 0x43A, size: 0x8, addend: 0x0, symName: _get_vm_page_families, symObjAddr: 0x5B4, symBinAddr: 0x100002D68, symSize: 0xC }
+  - { offsetInCU: 0x453, offset: 0x453, size: 0x8, addend: 0x0, symName: _mm_instantiate_vm_page_family, symObjAddr: 0x5C0, symBinAddr: 0x100002D74, symSize: 0x244 }
+  - { offsetInCU: 0x4D9, offset: 0x4D9, size: 0x8, addend: 0x0, symName: _mm_get_new_vm_page_from_kernel, symObjAddr: 0x804, symBinAddr: 0x100002FB8, symSize: 0x94 }
+  - { offsetInCU: 0x50F, offset: 0x50F, size: 0x8, addend: 0x0, symName: _print_vm_pages, symObjAddr: 0x898, symBinAddr: 0x10000304C, symSize: 0xE0 }
+  - { offsetInCU: 0x579, offset: 0x579, size: 0x8, addend: 0x0, symName: _mm_delete_vm_page, symObjAddr: 0x978, symBinAddr: 0x10000312C, symSize: 0x10C }
+  - { offsetInCU: 0x5AB, offset: 0x5AB, size: 0x8, addend: 0x0, symName: _mm_return_vm_page_to_kernel, symObjAddr: 0xA84, symBinAddr: 0x100003238, symSize: 0x64 }
+  - { offsetInCU: 0x5DD, offset: 0x5DD, size: 0x8, addend: 0x0, symName: _mm_print_registered_page_families, symObjAddr: 0xAE8, symBinAddr: 0x10000329C, symSize: 0x1C }
+  - { offsetInCU: 0x5F2, offset: 0x5F2, size: 0x8, addend: 0x0, symName: _print_vm_page_families, symObjAddr: 0xB04, symBinAddr: 0x1000032B8, symSize: 0xFC }
+  - { offsetInCU: 0x65C, offset: 0x65C, size: 0x8, addend: 0x0, symName: _mm_union_free_blocks, symObjAddr: 0xC00, symBinAddr: 0x1000033B4, symSize: 0xDC }
+  - { offsetInCU: 0x68E, offset: 0x68E, size: 0x8, addend: 0x0, symName: _mm_is_page_free, symObjAddr: 0xCDC, symBinAddr: 0x100003490, symSize: 0x74 }
+  - { offsetInCU: 0x6B6, offset: 0x6B6, size: 0x8, addend: 0x0, symName: _print_page_family_info, symObjAddr: 0xD50, symBinAddr: 0x100003504, symSize: 0x54 }
+  - { offsetInCU: 0x26, offset: 0x700, size: 0x8, addend: 0x0, symName: _print_employee_info, symObjAddr: 0x0, symBinAddr: 0x100003558, symSize: 0x74 }
+  - { offsetInCU: 0x41, offset: 0x71B, size: 0x8, addend: 0x0, symName: _print_employee_info, symObjAddr: 0x0, symBinAddr: 0x100003558, symSize: 0x74 }
+  - { offsetInCU: 0x65, offset: 0x73F, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x74, symBinAddr: 0x1000035CC, symSize: 0x198 }
+  - { offsetInCU: 0x26, offset: 0x931, size: 0x8, addend: 0x0, symName: _print_block_metadata, symObjAddr: 0x0, symBinAddr: 0x100003764, symSize: 0x7C }
+  - { offsetInCU: 0x41, offset: 0x94C, size: 0x8, addend: 0x0, symName: _print_block_metadata, symObjAddr: 0x0, symBinAddr: 0x100003764, symSize: 0x7C }
+  - { offsetInCU: 0x26, offset: 0xA10, size: 0x8, addend: 0x0, symName: _init_glthread, symObjAddr: 0x0, symBinAddr: 0x1000037E0, symSize: 0x20 }
+  - { offsetInCU: 0x3B, offset: 0xA25, size: 0x8, addend: 0x0, symName: _init_glthread, symObjAddr: 0x0, symBinAddr: 0x1000037E0, symSize: 0x20 }
+  - { offsetInCU: 0x5F, offset: 0xA49, size: 0x8, addend: 0x0, symName: _glthread_add_next, symObjAddr: 0x20, symBinAddr: 0x100003800, symSize: 0x88 }
+  - { offsetInCU: 0x9F, offset: 0xA89, size: 0x8, addend: 0x0, symName: _glthread_add_before, symObjAddr: 0xA8, symBinAddr: 0x100003888, symSize: 0x90 }
+  - { offsetInCU: 0xDF, offset: 0xAC9, size: 0x8, addend: 0x0, symName: _remove_glthread, symObjAddr: 0x138, symBinAddr: 0x100003918, symSize: 0xC8 }
+  - { offsetInCU: 0x103, offset: 0xAED, size: 0x8, addend: 0x0, symName: _delete_glthread_list, symObjAddr: 0x200, symBinAddr: 0x1000039E0, symSize: 0x6C }
+  - { offsetInCU: 0x151, offset: 0xB3B, size: 0x8, addend: 0x0, symName: _glthread_add_last, symObjAddr: 0x26C, symBinAddr: 0x100003A4C, symSize: 0xA8 }
+  - { offsetInCU: 0x1BB, offset: 0xBA5, size: 0x8, addend: 0x0, symName: _get_glthread_list_count, symObjAddr: 0x314, symBinAddr: 0x100003AF4, symSize: 0x6C }
+  - { offsetInCU: 0x21B, offset: 0xC05, size: 0x8, addend: 0x0, symName: _glthread_priority_insert, symObjAddr: 0x380, symBinAddr: 0x100003B60, symSize: 0x1E8 }
+...
