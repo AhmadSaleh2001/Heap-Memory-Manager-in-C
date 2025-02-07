@@ -49,6 +49,7 @@ int main() {
     }
 
     print_memory_status();
+    print_memory_usage();
    
     return 0;
 }

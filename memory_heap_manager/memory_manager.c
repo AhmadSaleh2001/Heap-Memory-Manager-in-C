@@ -272,3 +272,52 @@ void print_memory_status() {
         } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
     } ITERATE_PAGE_FAMILIES_END(first_family_page, current_page_families)
 }
+
+int get_total_number_of_created_blocks(vm_page_t * vm_page) {
+    int total = 0;
+
+    vm_page_t * current_vm_page = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page, current_vm_page) {
+        block_metadata_t * current_block_metadata = NULL;
+        ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
+            total++;
+        } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
+        vm_page = vm_page->next;
+    } ITERATE_VM_PAGES_END(vm_page, current_vm_page)
+    return total;
+}
+
+int get_total_number_of_used_blocks(vm_page_t * vm_page) {
+    int total = 0;
+
+    vm_page_t * current_vm_page = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page, current_vm_page) {
+        block_metadata_t * current_block_metadata = NULL;
+        ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
+            total+=current_block_metadata->is_free == true;
+        } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
+        vm_page = vm_page->next;
+    } ITERATE_VM_PAGES_END(vm_page, current_vm_page)
+    return total;
+}
+
+int print_and_get_vm_page_statistcs(vm_page_family_t * vm_page_family) {
+    int total_number_of_created_blocks = get_total_number_of_created_blocks(vm_page_family->first_vm_page);
+    int total_number_of_used_blocks = get_total_number_of_used_blocks(vm_page_family->first_vm_page);
+
+    printf("struct: %s: \n", vm_page_family->struct_name);
+    printf("blocks status:\tcreated blocks: %d\tused blocks: %d\tfree blocks: %d\n", total_number_of_created_blocks, total_number_of_used_blocks, total_number_of_created_blocks - total_number_of_used_blocks);
+    return total_number_of_created_blocks;
+}
+
+void print_memory_usage() {
+    vm_page_families_t * current_page_families = NULL;
+    ITERATE_PAGE_FAMILIES_BEGIN(first_family_page, current_page_families) {
+        vm_page_family_t * current_page_family = NULL;
+        ITERATE_PAGE_FAMILY_BEGIN(current_page_families->vm_page_family, current_page_family) {
+            printf("\n----- %s ------\n", current_page_family->struct_name);
+            print_and_get_vm_page_statistcs(current_page_family);
+            printf("\n----- %s ------\n", current_page_family->struct_name);
+        } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
+    } ITERATE_PAGE_FAMILIES_END(first_family_page, current_page_families)
+}
