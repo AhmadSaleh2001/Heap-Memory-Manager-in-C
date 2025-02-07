@@ -92,6 +92,6 @@ void mm_instantiate_vm_page_family(char * struct_name, int size);
 void mm_print_registered_page_families();
 vm_page_family_t * lookup_page_family_by_name(char *struct_name);
 void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b);
-void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units);
+block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units);
 
 void print_page_family_info(vm_page_family_t* vm_page_family);

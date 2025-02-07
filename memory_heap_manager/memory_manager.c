@@ -16,11 +16,10 @@ void * xmalloc(char * struct_name) {
         exit(0);
     }
     block_metadata_t * free_block = first_fit_block(page_family, 1);
-    if(free_block == NULL)mm_allocate_vm_page(page_family);
-    
+    if(free_block == NULL)mm_allocate_vm_page(page_family);    
     free_block = first_fit_block(page_family, 1);
 
-    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block, 1);
+    return mm_allocate_block_metadata(page_family, free_block, 1);
 }
 
 void * xcalloc(char * struct_name, int units) {
@@ -30,7 +29,9 @@ void * xcalloc(char * struct_name, int units) {
         exit(0);
     }
     block_metadata_t * free_block = first_fit_block(page_family, units);
-    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block, units);
+    if(free_block == NULL)mm_allocate_vm_page(page_family);
+    block_metadata_t * new_block = mm_allocate_block_metadata(page_family, free_block, units);
+    return (void *)(new_block + 1);
 }
 
 void init_mmap() {
@@ -107,7 +108,7 @@ vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
     vm_page->prev = NULL;
 
     vm_page->blocks[0].is_free = true;
-    vm_page->blocks[0].block_size = SYSTEM_PAGE_SIZE - sizeof(vm_page_t);
+    vm_page->blocks[0].block_size = SYSTEM_PAGE_SIZE - sizeof(block_metadata_t);
     vm_page->blocks[0].prev = NULL;
     vm_page->blocks[0].next = NULL;
     vm_page->blocks[0].offset = 0;
@@ -220,9 +221,16 @@ void print_page_family_info(vm_page_family_t* vm_page_family) {
     printf("struct size: %d\n", vm_page_family->size);
 }
 
-void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units) {
+block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units) {
     int old_offset = free_block->offset;
     int total_size = sizeof(block_metadata_t) + units*vm_page_family->size;
+
+    // handle interanl fragmentation cases
+    if(free_block->block_size - total_size < sizeof(block_metadata_t)) {
+        free_block->is_free = false;
+        return free_block;
+    }
+    
     free_block->offset += total_size;
     free_block->block_size -= total_size;
 
@@ -244,5 +252,5 @@ void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_
 
     mm_bind_blocks_for_allocation(old_free_block, new_block);
 
-    return new_block + sizeof(block_metadata_t);
+    return new_block;
 }
