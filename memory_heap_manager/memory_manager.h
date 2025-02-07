@@ -1,5 +1,4 @@
 #pragma once
-#include "vm_page_family.h"
 #include "block_metadata.h"
 
 #define MM_REGISTER_STRUCT(struct_name) \
@@ -46,17 +45,24 @@
 #define ITERATE_VM_PAGES_END(vm_page_ptr, current_vm_page) }}
 
 #define ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page_metadata_blocks, current_metadata_block) { \
-    int count = 0; \
-    for(current_metadata_block=(block_metadata_t*)&vm_page_metadata_blocks;count < MAX_METADATA_BLOCKS_PER_VM_PAGE;current_metadata_block++, count++) { \
+    int limit = (int)&vm_page_metadata_blocks + getpagesize(); \
+    for(current_metadata_block=(block_metadata_t*)vm_page_metadata_blocks;(int)current_metadata_block < limit;current_metadata_block = (char*)(current_metadata_block + 1) + current_metadata_block->block_size) { \
 
 #define ITERATE_VM_PAGE_BLOCKS_END(vm_page_metadata_blocks, current_metadata_block) }}
 
+#define MM_MAX_STRUCT_NAME 100
+
 typedef struct vm_page_;
+
+typedef struct vm_page_family_ {
+    char struct_name[MM_MAX_STRUCT_NAME];
+    int size;
+    struct vm_page_ * first_vm_page;
+} vm_page_family_t;
 
 typedef struct vm_page_families_ {
     struct vm_page_families_ *next;
     struct vm_page_families_ *prev;
-    struct vm_page_ * first_vm_page;
     vm_page_family_t vm_page_family[];
 } vm_page_families_t;
 
@@ -65,13 +71,13 @@ void print_vm_page_families(vm_page_families_t * vm_page_families);
 typedef struct vm_page_ {
     struct vm_page_ * prev;
     struct vm_page_ * next;
-    vm_page_families_t * page_families;
+    vm_page_family_t * vm_page_familiy;
     block_metadata_t blocks[];
 } vm_page_t;
 
 vm_page_families_t * get_vm_page_families();
 
-vm_page_t * mm_allocate_vm_page(vm_page_families_t * vm_page_families);
+vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family);
 
 bool mm_is_page_free(vm_page_t * vm_page);
 void print_vm_page_families(vm_page_families_t * vm_page_families);
@@ -81,3 +87,5 @@ void mm_instantiate_vm_page_family(char * struct_name, int size);
 void mm_print_registered_page_families();
 vm_page_family_t * lookup_page_family_by_name(char *struct_name);
 void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b);
+
+void print_page_family_info(vm_page_family_t* vm_page_family);

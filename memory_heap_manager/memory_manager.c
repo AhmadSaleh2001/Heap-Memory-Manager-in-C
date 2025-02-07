@@ -5,7 +5,6 @@
 #include <sys/mman.h>
 #include <memory.h>
 #include "memory_manager.h"
-#include "vm_page_family.h"
 
 static int32_t SYSTEM_PAGE_SIZE = 0;
 static vm_page_families_t * first_family_page = NULL;
@@ -77,7 +76,7 @@ void mm_instantiate_vm_page_family(char * struct_name, int size) {
     memcpy(&first_family_page->vm_page_family[first_empty_memory_index].struct_name, struct_name, MM_MAX_STRUCT_NAME);
 }
 
-vm_page_t * mm_allocate_vm_page(vm_page_families_t * vm_page_families) {
+vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
     vm_page_t * vm_page = (vm_page_t*)mm_get_new_vm_page_from_kernel(1);
 
     vm_page->next = NULL;
@@ -88,13 +87,13 @@ vm_page_t * mm_allocate_vm_page(vm_page_families_t * vm_page_families) {
     vm_page->blocks[0].prev = NULL;
     vm_page->blocks[0].next = NULL;
     vm_page->blocks[0].offset = 0;
-    vm_page->page_families = vm_page_families;
+    vm_page->vm_page_familiy = vm_page_family;
     
-    if(vm_page_families->first_vm_page == NULL) {
-        vm_page_families->first_vm_page = vm_page;
+    if(vm_page_family->first_vm_page == NULL) {
+        vm_page_family->first_vm_page = vm_page;
     } else {
-        vm_page->next = vm_page_families->first_vm_page;
-        vm_page_families->first_vm_page = vm_page;
+        vm_page->next = vm_page_family->first_vm_page;
+        vm_page_family->first_vm_page = vm_page;
     }
 
     return vm_page;
@@ -102,10 +101,11 @@ vm_page_t * mm_allocate_vm_page(vm_page_families_t * vm_page_families) {
 
 void mm_delete_vm_page(vm_page_t * vm_page) {
 
-    if(first_family_page->first_vm_page == vm_page) {
-        first_family_page->first_vm_page = vm_page->next;
-        if(first_family_page->first_vm_page) {
-            first_family_page->first_vm_page->prev = NULL;
+    vm_page_family_t * vm_page_family = vm_page->vm_page_familiy;
+    if(vm_page_family->first_vm_page == vm_page) {
+        vm_page_family->first_vm_page = vm_page->next;
+        if(vm_page_family->first_vm_page) {
+            vm_page_family->first_vm_page->prev = NULL;
         }
         vm_page->prev = NULL;
         vm_page->next = NULL;
@@ -160,4 +160,9 @@ void print_vm_page_families(vm_page_families_t * vm_page_families) {
             print_page_family_info(current_page_family);
         } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
     } ITERATE_PAGE_FAMILIES_END(vm_page_families, current_page_families)
+}
+
+void print_page_family_info(vm_page_family_t* vm_page_family) {
+    printf("struct name: %s\n", vm_page_family->struct_name);
+    printf("struct size: %d\n", vm_page_family->size);
 }

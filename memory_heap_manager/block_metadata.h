@@ -26,3 +26,5 @@ typedef struct block_metadata_
     uint32_t block_size;
     int offset;
 } block_metadata_t;
+
+void print_block_metadata(block_metadata_t * block_metadata);
