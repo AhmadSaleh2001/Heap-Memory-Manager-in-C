@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include "memory_manager.h"
 #include "block_metadata.h"
 
@@ -17,6 +18,12 @@ typedef struct emp_
     int eid;
 } emp_t;
 
+void print_employee_info(emp_t * emp){
+    printf("emp id: %d\n", emp->eid);
+    printf("emp name: %s\n", emp->emp_name);
+    printf("emp salary: %d\n", emp->salary);
+}
+
 int main() {
 
     init_mmap();
@@ -24,17 +31,12 @@ int main() {
     MM_REGISTER_STRUCT(emp_t);
     // mm_print_registered_page_families();
 
-    vm_page_family_t * stds = lookup_page_family_by_name("std_t");
-    vm_page_t * vm1 = mm_allocate_vm_page(stds);
-    vm_page_t * vm2 = mm_allocate_vm_page(stds);
+    emp_t * emp = xmalloc("emp_t");
+    emp->eid = 1;
+    memcpy(emp->emp_name, "ahmad", 5);
+    emp->salary = 3000;
 
-    int number_of_items = 341;
-    for(int i=0;i<number_of_items;i++) {
-        block_metadata_t * first_free_enough_block = get_first_empty_block(stds);
-        if(first_free_enough_block != NULL){
-            mm_add_free_block_metadata_to_free_block_list(stds, first_free_enough_block);
-        }
-    }
+    print_employee_info(emp);
    
     return 0;
 }

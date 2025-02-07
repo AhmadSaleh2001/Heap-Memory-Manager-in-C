@@ -75,11 +75,13 @@ typedef struct vm_page_ {
     block_metadata_t blocks[];
 } vm_page_t;
 
+void * xmalloc(char * struct_name);
+
 vm_page_families_t * get_vm_page_families();
 
 vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family);
 void print_vm_pages(vm_page_family_t * vm_page_family);
-block_metadata_t * get_first_empty_block(vm_page_family_t * vm_page_family);
+block_metadata_t * first_fit_block(vm_page_family_t * vm_page_family);
 
 bool mm_is_page_free(vm_page_t * vm_page);
 void print_vm_page_families(vm_page_families_t * vm_page_families);
@@ -89,6 +91,6 @@ void mm_instantiate_vm_page_family(char * struct_name, int size);
 void mm_print_registered_page_families();
 vm_page_family_t * lookup_page_family_by_name(char *struct_name);
 void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b);
-void mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block);
+void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block);
 
 void print_page_family_info(vm_page_family_t* vm_page_family);

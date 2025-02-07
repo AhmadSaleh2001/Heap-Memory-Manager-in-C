@@ -9,6 +9,20 @@
 static int32_t SYSTEM_PAGE_SIZE = 0;
 static vm_page_families_t * first_family_page = NULL;
 
+void * xmalloc(char * struct_name) {
+    vm_page_family_t * page_family = lookup_page_family_by_name(struct_name);
+    if(page_family == NULL) {
+        printf("Struct with name %s not registerd\n", struct_name);
+        exit(0);
+    }
+    block_metadata_t * free_block = first_fit_block(page_family);
+    if(free_block == NULL)mm_allocate_vm_page(page_family);
+    
+    free_block = first_fit_block(page_family);
+
+    return mm_add_free_block_metadata_to_free_block_list(page_family, free_block);
+}
+
 void init_mmap() {
     SYSTEM_PAGE_SIZE = getpagesize();
 }
@@ -111,7 +125,7 @@ void print_vm_pages(vm_page_family_t * vm_page_family) {
     } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
 }
 
-block_metadata_t * get_first_empty_block(vm_page_family_t * vm_page_family) {
+block_metadata_t * first_fit_block(vm_page_family_t * vm_page_family) {
     vm_page_t * curr_vm_page = NULL;
     block_metadata_t * first_free_enough_block = NULL;
     ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
@@ -196,7 +210,7 @@ void print_page_family_info(vm_page_family_t* vm_page_family) {
     printf("struct size: %d\n", vm_page_family->size);
 }
 
-void mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block) {
+void * mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_family, block_metadata_t * free_block) {
     int old_offset = free_block->offset;
     int total_size = sizeof(block_metadata_t) + vm_page_family->size;
     free_block->offset += total_size;
@@ -218,6 +232,7 @@ void mm_add_free_block_metadata_to_free_block_list(vm_page_family_t * vm_page_fa
     // print_block_metadata(old_free_block);
     // print_block_metadata(new_block);
 
-
     mm_bind_blocks_for_allocation(old_free_block, new_block);
+
+    return new_block + sizeof(block_metadata_t);
 }
