@@ -38,17 +38,17 @@ int main() {
     emp->salary = 3000;
 
 
-    // emp_t * emps = xcalloc("emp_t", 5);
-    // for(int i=0;i<5;i++) {
-    //     emps[i].eid = i + 100;
-    //     memcpy(emps[i].emp_name, "aaaa", 4);
-    //     emps[i].salary = 4000 + i;
-    // }
+    emp_t * emps = xcalloc("emp_t", 5);
+    for(int i=0;i<5;i++) {
+        emps[i].eid = i + 100;
+        memcpy(emps[i].emp_name, "aaaa", 4);
+        emps[i].salary = 4000 + i;
+    }
 
-    // for(int i=0;i<5;i++) {
-    //     print_employee_info(&emps[i]);
-    //     printf("\n");
-    // }
+    for(int i=0;i<5;i++) {
+        print_employee_info(&emps[i]);
+        printf("\n");
+    }
 
     vm_page_family_t * page_family = lookup_page_family_by_name("emp_t");
     print_vm_pages(page_family);

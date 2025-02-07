@@ -18,8 +18,9 @@ void * xmalloc(char * struct_name) {
     block_metadata_t * free_block = first_fit_block(page_family, 1);
     if(free_block == NULL)mm_allocate_vm_page(page_family);    
     free_block = first_fit_block(page_family, 1);
-
-    return mm_allocate_block_metadata(page_family, free_block, 1);
+    assert(free_block != NULL);
+    block_metadata_t * new_block = mm_allocate_block_metadata(page_family, free_block, 1);
+    return (void *)(new_block + 1);
 }
 
 void * xcalloc(char * struct_name, int units) {
@@ -30,6 +31,8 @@ void * xcalloc(char * struct_name, int units) {
     }
     block_metadata_t * free_block = first_fit_block(page_family, units);
     if(free_block == NULL)mm_allocate_vm_page(page_family);
+    free_block = first_fit_block(page_family, units);
+    assert(free_block != NULL);
     block_metadata_t * new_block = mm_allocate_block_metadata(page_family, free_block, units);
     return (void *)(new_block + 1);
 }
@@ -222,11 +225,14 @@ void print_page_family_info(vm_page_family_t* vm_page_family) {
 }
 
 block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units) {
+    assert(free_block->is_free == true);
     int old_offset = free_block->offset;
     int total_size = sizeof(block_metadata_t) + units*vm_page_family->size;
 
-    // handle interanl fragmentation cases
-    if(free_block->block_size - total_size < sizeof(block_metadata_t)) {
+    // handle interanl fragmentation case
+    // soft fragmentation => sizeof(block_metadata_t) < remaining size
+    // hard fragmentation => sizeof(block_metadata_t) >= remaining size
+    if(free_block->block_size - total_size <= sizeof(block_metadata_t)) {
         free_block->is_free = false;
         return free_block;
     }
