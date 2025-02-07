@@ -29,8 +29,11 @@ int main() {
     init_mmap();
     MM_REGISTER_STRUCT(std_t);
     MM_REGISTER_STRUCT(emp_t);
-    // mm_print_registered_page_families();
+    mm_print_registered_page_families();
 
+    std_t * std = xmalloc("std_t");
+    std->age = 19;
+    memcpy(std->name, "ali", 3);
 
     emp_t * emp = xmalloc("emp_t");
     emp->eid = 1;
@@ -45,14 +48,7 @@ int main() {
         emps[i].salary = 4000 + i;
     }
 
-    for(int i=0;i<5;i++) {
-        print_employee_info(&emps[i]);
-        printf("\n");
-    }
-
-    vm_page_family_t * page_family = lookup_page_family_by_name("emp_t");
-    print_vm_pages(page_family);
-
+    print_memory_status();
    
     return 0;
 }

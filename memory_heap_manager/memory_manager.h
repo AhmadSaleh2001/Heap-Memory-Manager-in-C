@@ -95,3 +95,5 @@ void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b);
 block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units);
 
 void print_page_family_info(vm_page_family_t* vm_page_family);
+
+void print_memory_status();

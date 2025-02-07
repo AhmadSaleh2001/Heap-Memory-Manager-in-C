@@ -260,3 +260,15 @@ block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family,
 
     return new_block;
 }
+
+void print_memory_status() {
+    vm_page_families_t * current_page_families = NULL;
+    ITERATE_PAGE_FAMILIES_BEGIN(first_family_page, current_page_families) {
+        vm_page_family_t * current_page_family = NULL;
+        ITERATE_PAGE_FAMILY_BEGIN(current_page_families->vm_page_family, current_page_family) {
+            printf("\n----- %s ------\n", current_page_family->struct_name);
+            print_vm_pages(current_page_family);
+            printf("\n----- %s ------\n", current_page_family->struct_name);
+        } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
+    } ITERATE_PAGE_FAMILIES_END(first_family_page, current_page_families)
+}
