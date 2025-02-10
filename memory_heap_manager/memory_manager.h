@@ -4,6 +4,9 @@
 #define MM_REGISTER_STRUCT(struct_name) \
     mm_instantiate_vm_page_family(#struct_name, sizeof(struct_name));
 
+#define offset_of(container_structure, field_name)  \
+    ((size_t)&(((container_structure *)0)->field_name))
+
 
 // we need to put allocated block first (first from bottom)
 // meaning, before the current big block
@@ -77,6 +80,7 @@ typedef struct vm_page_ {
 
 void * xmalloc(char * struct_name);
 void * xcalloc(char * struct_name, int units);
+void * xfree(void * block_metadata);
 
 vm_page_families_t * get_vm_page_families();
 

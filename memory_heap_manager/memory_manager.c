@@ -16,7 +16,7 @@ void * xmalloc(char * struct_name) {
         exit(0);
     }
     block_metadata_t * free_block = first_fit_block(page_family, 1);
-    if(free_block == NULL)mm_allocate_vm_page(page_family);    
+    if(free_block == NULL)mm_allocate_vm_page(page_family);
     free_block = first_fit_block(page_family, 1);
     assert(free_block != NULL);
     block_metadata_t * new_block = mm_allocate_block_metadata(page_family, free_block, 1);
@@ -45,7 +45,7 @@ vm_page_families_t * get_vm_page_families() {
     return first_family_page;
 }
 
-static void * mm_get_new_vm_page_from_kernel(int number_of_pages) {
+void * mm_get_new_vm_page_from_kernel(int number_of_pages) {
     char * vm_page = mmap(
         0,  // pass it as null currently
         number_of_pages * SYSTEM_PAGE_SIZE, // number of memory pages
@@ -68,6 +68,42 @@ static void mm_return_vm_page_to_kernel(char * vm_page, int number_of_pages) {
         printf("failed to deallocate vm page");
         exit(1);
     }
+}
+
+void remove_family_vm_page(vm_page_family_t * vm_page_familiy, vm_page_t * vm_page) {
+    if(vm_page_familiy->first_vm_page == vm_page) {
+        vm_page_familiy->first_vm_page = vm_page_familiy->first_vm_page->next;
+        if(vm_page_familiy->first_vm_page)vm_page_familiy->first_vm_page->prev = NULL;
+        return;
+    }
+    vm_page_t * current_vm_page = NULL;
+    ITERATE_VM_PAGES_BEGIN(vm_page_familiy, current_vm_page) {
+        if(current_vm_page == vm_page) {
+            if(current_vm_page->prev)current_vm_page->prev->next = current_vm_page->next;
+            if(current_vm_page->next)current_vm_page->next->prev = current_vm_page->prev;
+            break;
+        }
+    } ITERATE_VM_PAGES_END(vm_page_familiy, current_vm_page)
+}
+
+void freeUnusedPage(block_metadata_t * block) {
+    assert(block);
+    while(block->prev)block = block->prev;
+    if(block->is_free && block->next == NULL) {
+        vm_page_t * vm_page = (char*)block - block->offset;
+        remove_family_vm_page(vm_page->vm_page_familiy, vm_page);
+        mm_return_vm_page_to_kernel(vm_page, 1);
+    }
+}
+
+void * xfree(void * block_metadata) {
+    assert(block_metadata != NULL);
+    block_metadata_t * block = (char*)block_metadata - sizeof(block_metadata_t);
+    block->is_free = true;
+    if(block->next && block->next->is_free)mm_union_free_blocks(block, block->next);
+    if(block->prev && block->prev->is_free)mm_union_free_blocks(block->prev, block);
+
+    freeUnusedPage(block);
 }
 
 void mm_instantiate_vm_page_family(char * struct_name, int size) {
@@ -114,7 +150,7 @@ vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
     vm_page->blocks[0].block_size = SYSTEM_PAGE_SIZE - sizeof(block_metadata_t);
     vm_page->blocks[0].prev = NULL;
     vm_page->blocks[0].next = NULL;
-    vm_page->blocks[0].offset = 0;
+    vm_page->blocks[0].offset = offset_of(vm_page_t, blocks);
     vm_page->vm_page_familiy = vm_page_family;
     
     if(vm_page_family->first_vm_page == NULL) {
@@ -199,9 +235,11 @@ vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
 }
 
 void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b) {
+    assert(a != NULL);
+    assert(b != NULL);
     assert(a->is_free && b->is_free);
     a->next = b->next;
-    if(b->next)b->prev = a;
+    if(b->next)b->next->prev = a;
     a->block_size+=sizeof(block_metadata_t) + b->block_size;
 }
 
