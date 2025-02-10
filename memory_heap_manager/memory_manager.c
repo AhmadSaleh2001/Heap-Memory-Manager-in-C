@@ -332,7 +332,7 @@ int get_total_number_of_used_blocks(vm_page_t * vm_page) {
     ITERATE_VM_PAGES_BEGIN(vm_page, current_vm_page) {
         block_metadata_t * current_block_metadata = NULL;
         ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
-            total+=current_block_metadata->is_free == true;
+            total+=current_block_metadata->is_free == false;
         } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
         vm_page = vm_page->next;
     } ITERATE_VM_PAGES_END(vm_page, current_vm_page)

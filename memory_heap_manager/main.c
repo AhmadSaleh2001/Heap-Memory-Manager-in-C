@@ -52,7 +52,7 @@ int main() {
     print_memory_usage();
 
     xfree(std);
-    xfree(emp);
+    // xfree(emp);
     xfree(emps);
 
     print_memory_status();
