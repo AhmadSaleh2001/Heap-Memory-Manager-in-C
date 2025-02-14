@@ -17,6 +17,12 @@
 #define MM_PREV_META_BLOCK(block_metadata_ptr) \
     block_metadata_ptr->prev
 
+#define ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page_metadata_blocks, current_metadata_block) { \
+    int limit = (int)&vm_page_metadata_blocks + getpagesize(); \
+    for(current_metadata_block=(block_metadata_t*)vm_page_metadata_blocks;(int)current_metadata_block < limit;current_metadata_block = (char*)(current_metadata_block + 1) + current_metadata_block->block_size) { \
+
+#define ITERATE_VM_PAGE_BLOCKS_END(vm_page_metadata_blocks, current_metadata_block) }}
+
 
 typedef struct block_metadata_
 {
@@ -28,3 +34,4 @@ typedef struct block_metadata_
 } block_metadata_t;
 
 void print_block_metadata(block_metadata_t * block_metadata);
+void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b);

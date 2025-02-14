@@ -47,12 +47,6 @@
 
 #define ITERATE_VM_PAGES_END(vm_page_ptr, current_vm_page) }}
 
-#define ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page_metadata_blocks, current_metadata_block) { \
-    int limit = (int)&vm_page_metadata_blocks + getpagesize(); \
-    for(current_metadata_block=(block_metadata_t*)vm_page_metadata_blocks;(int)current_metadata_block < limit;current_metadata_block = (char*)(current_metadata_block + 1) + current_metadata_block->block_size) { \
-
-#define ITERATE_VM_PAGE_BLOCKS_END(vm_page_metadata_blocks, current_metadata_block) }}
-
 #define MM_MAX_STRUCT_NAME 100
 
 typedef struct vm_page_;

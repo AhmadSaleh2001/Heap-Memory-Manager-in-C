@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <sys/mman.h>
 #include <memory.h>
+#include "block_metadata.h"
 #include "memory_manager.h"
 
 static int32_t SYSTEM_PAGE_SIZE = 0;
@@ -232,15 +233,6 @@ vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
     } ITERATE_PAGE_FAMILIES_END(first_family_page, current_page_families)
 
     return NULL;
-}
-
-void mm_union_free_blocks(block_metadata_t * a, block_metadata_t * b) {
-    assert(a != NULL);
-    assert(b != NULL);
-    assert(a->is_free && b->is_free);
-    a->next = b->next;
-    if(b->next)b->next->prev = a;
-    a->block_size+=sizeof(block_metadata_t) + b->block_size;
 }
 
 bool mm_is_page_free(vm_page_t * vm_page) {
