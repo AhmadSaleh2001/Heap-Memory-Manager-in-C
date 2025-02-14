@@ -10,6 +10,54 @@
 static int32_t SYSTEM_PAGE_SIZE = 0;
 static vm_page_families_t * first_family_page = NULL;
 
+void * mm_get_new_vm_page_from_kernel(int number_of_pages) {
+    char * vm_page = mmap(
+        0,  // pass it as null currently
+        number_of_pages * SYSTEM_PAGE_SIZE, // number of memory pages
+        PROT_READ|PROT_WRITE, // permissions on the allocated pages
+        MAP_ANON|MAP_PRIVATE,
+        0,
+        0
+    );
+    if (vm_page == MAP_FAILED) {
+        perror("failed to allocate pages");
+        exit(1);
+    }
+
+    memset(vm_page, 0, SYSTEM_PAGE_SIZE);
+    return vm_page;
+}
+
+static void mm_return_vm_page_to_kernel(char * vm_page, int number_of_pages) {
+    if(munmap(vm_page, number_of_pages*SYSTEM_PAGE_SIZE)) {
+        printf("failed to deallocate vm page");
+        exit(1);
+    }
+}
+
+vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
+    vm_page_t * vm_page = (vm_page_t*)mm_get_new_vm_page_from_kernel(1);
+
+    vm_page->next = NULL;
+    vm_page->prev = NULL;
+
+    vm_page->blocks[0].is_free = true;
+    vm_page->blocks[0].block_size = getpagesize() - sizeof(block_metadata_t);
+    vm_page->blocks[0].prev = NULL;
+    vm_page->blocks[0].next = NULL;
+    vm_page->blocks[0].offset = offset_of(vm_page_t, blocks);
+    vm_page->vm_page_familiy = vm_page_family;
+    
+    if(vm_page_family->first_vm_page == NULL) {
+        vm_page_family->first_vm_page = vm_page;
+    } else {
+        vm_page->next = vm_page_family->first_vm_page;
+        vm_page_family->first_vm_page = vm_page;
+    }
+
+    return vm_page;
+}
+
 void * xmalloc(char * struct_name) {
     vm_page_family_t * page_family = lookup_page_family_by_name(struct_name);
     if(page_family == NULL) {
@@ -44,31 +92,6 @@ void init_mmap() {
 
 vm_page_families_t * get_vm_page_families() {
     return first_family_page;
-}
-
-void * mm_get_new_vm_page_from_kernel(int number_of_pages) {
-    char * vm_page = mmap(
-        0,  // pass it as null currently
-        number_of_pages * SYSTEM_PAGE_SIZE, // number of memory pages
-        PROT_READ|PROT_WRITE, // permissions on the allocated pages
-        MAP_ANON|MAP_PRIVATE,
-        0,
-        0
-    );
-    if (vm_page == MAP_FAILED) {
-        perror("failed to allocate pages");
-        exit(1);
-    }
-
-    memset(vm_page, 0, SYSTEM_PAGE_SIZE);
-    return vm_page;
-}
-
-static void mm_return_vm_page_to_kernel(char * vm_page, int number_of_pages) {
-    if(munmap(vm_page, number_of_pages*SYSTEM_PAGE_SIZE)) {
-        printf("failed to deallocate vm page");
-        exit(1);
-    }
 }
 
 void mm_instantiate_vm_page_family(char * struct_name, int size) {
@@ -141,41 +164,6 @@ void * xfree(void * block_metadata) {
     freeUnusedPage(block);
 }
 
-vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
-    vm_page_t * vm_page = (vm_page_t*)mm_get_new_vm_page_from_kernel(1);
-
-    vm_page->next = NULL;
-    vm_page->prev = NULL;
-
-    vm_page->blocks[0].is_free = true;
-    vm_page->blocks[0].block_size = SYSTEM_PAGE_SIZE - sizeof(block_metadata_t);
-    vm_page->blocks[0].prev = NULL;
-    vm_page->blocks[0].next = NULL;
-    vm_page->blocks[0].offset = offset_of(vm_page_t, blocks);
-    vm_page->vm_page_familiy = vm_page_family;
-    
-    if(vm_page_family->first_vm_page == NULL) {
-        vm_page_family->first_vm_page = vm_page;
-    } else {
-        vm_page->next = vm_page_family->first_vm_page;
-        vm_page_family->first_vm_page = vm_page;
-    }
-
-    return vm_page;
-}
-
-void print_vm_pages(vm_page_family_t * vm_page_family) {
-    vm_page_t * curr_vm_page = NULL;
-    ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
-        block_metadata_t * curr_block = NULL;
-        ITERATE_VM_PAGE_BLOCKS_BEGIN(curr_vm_page->blocks, curr_block) {
-            print_block_metadata(curr_block);
-            printf("\n");
-        } ITERATE_VM_PAGE_BLOCKS_END(curr_vm_page->blocks, curr_block)
-        printf("--------\n");
-    } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
-}
-
 block_metadata_t * first_fit_block(vm_page_family_t * vm_page_family, int units) {
     vm_page_t * curr_vm_page = NULL;
     block_metadata_t * first_free_enough_block = NULL;
@@ -235,10 +223,6 @@ vm_page_family_t * lookup_page_family_by_name(char *struct_name) {
     return NULL;
 }
 
-bool mm_is_page_free(vm_page_t * vm_page) {
-    return vm_page->blocks[0].is_free == true && vm_page->prev == NULL && vm_page->next == NULL;
-}
-
 void print_vm_page_families(vm_page_families_t * vm_page_families) {
     vm_page_families_t * current_page_families = NULL;
     ITERATE_PAGE_FAMILIES_BEGIN(vm_page_families, current_page_families) {
@@ -247,11 +231,6 @@ void print_vm_page_families(vm_page_families_t * vm_page_families) {
             print_page_family_info(current_page_family);
         } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
     } ITERATE_PAGE_FAMILIES_END(vm_page_families, current_page_families)
-}
-
-void print_page_family_info(vm_page_family_t* vm_page_family) {
-    printf("struct name: %s\n", vm_page_family->struct_name);
-    printf("struct size: %d\n", vm_page_family->size);
 }
 
 block_metadata_t * mm_allocate_block_metadata(vm_page_family_t * vm_page_family, block_metadata_t * free_block, int units) {
@@ -301,34 +280,6 @@ void print_memory_status() {
             printf("\n----- %s ------\n", current_page_family->struct_name);
         } ITERATE_PAGE_FAMILY_END(current_page_families->vm_page_family, current_page_family)
     } ITERATE_PAGE_FAMILIES_END(first_family_page, current_page_families)
-}
-
-int get_total_number_of_created_blocks(vm_page_t * vm_page) {
-    int total = 0;
-
-    vm_page_t * current_vm_page = NULL;
-    ITERATE_VM_PAGES_BEGIN(vm_page, current_vm_page) {
-        block_metadata_t * current_block_metadata = NULL;
-        ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
-            total++;
-        } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
-        vm_page = vm_page->next;
-    } ITERATE_VM_PAGES_END(vm_page, current_vm_page)
-    return total;
-}
-
-int get_total_number_of_used_blocks(vm_page_t * vm_page) {
-    int total = 0;
-
-    vm_page_t * current_vm_page = NULL;
-    ITERATE_VM_PAGES_BEGIN(vm_page, current_vm_page) {
-        block_metadata_t * current_block_metadata = NULL;
-        ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
-            total+=current_block_metadata->is_free == false;
-        } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
-        vm_page = vm_page->next;
-    } ITERATE_VM_PAGES_END(vm_page, current_vm_page)
-    return total;
 }
 
 int print_and_get_vm_page_statistcs(vm_page_family_t * vm_page_family) {

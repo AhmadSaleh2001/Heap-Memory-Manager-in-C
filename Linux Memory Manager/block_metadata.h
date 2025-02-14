@@ -17,6 +17,16 @@
 #define MM_PREV_META_BLOCK(block_metadata_ptr) \
     block_metadata_ptr->prev
 
+// we need to put allocated block first (first from bottom)
+// meaning, before the current big block
+#define mm_bind_blocks_for_allocation(allocated_meta_block, free_meta_block) \
+    free_meta_block->next = allocated_meta_block; \
+    free_meta_block->prev = allocated_meta_block->prev; \
+    if(allocated_meta_block->prev) { \
+        allocated_meta_block->prev = free_meta_block; \
+    } \
+    allocated_meta_block->prev = free_meta_block;
+
 #define ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page_metadata_blocks, current_metadata_block) { \
     int limit = (int)&vm_page_metadata_blocks + getpagesize(); \
     for(current_metadata_block=(block_metadata_t*)vm_page_metadata_blocks;(int)current_metadata_block < limit;current_metadata_block = (char*)(current_metadata_block + 1) + current_metadata_block->block_size) { \
