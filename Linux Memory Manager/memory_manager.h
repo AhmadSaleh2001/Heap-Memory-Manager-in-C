@@ -23,7 +23,7 @@
 
 #define ITERATE_PAGE_FAMILY_BEGIN(vm_page_family_ptr, current_page_family) { \
     int count = 0; \
-    for(current_page_family=(vm_page_family_t*)&vm_page_family_ptr;count < MM_MAX_FAMILIES_PER_PAGE && current_page_family->size > 0;current_page_family++, count++){ \
+    for(current_page_family=(vm_page_family_t*)vm_page_family_ptr;count < MM_MAX_FAMILIES_PER_PAGE && current_page_family->size > 0;current_page_family++, count++){ \
 
 #define ITERATE_PAGE_FAMILY_END(vm_page_family_ptr, current_page_family) }}
 

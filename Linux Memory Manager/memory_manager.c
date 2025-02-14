@@ -70,6 +70,40 @@ static void mm_return_vm_page_to_kernel(char * vm_page, int number_of_pages) {
     }
 }
 
+void mm_instantiate_vm_page_family(char * struct_name, int size) {
+    if(size > SYSTEM_PAGE_SIZE) {
+        printf("Error: %s  to allocate instantiate page with size %d, system page size is %d",
+        __FUNCTION__,size, SYSTEM_PAGE_SIZE
+        );
+
+        exit(1);
+    }
+
+    if(!first_family_page) {
+        first_family_page = (vm_page_families_t*)mm_get_new_vm_page_from_kernel(1);
+        first_family_page->next = NULL;
+    }
+
+    int first_empty_index_for_new_page_family = 0;
+    vm_page_family_t * current_page_family = NULL;
+    ITERATE_PAGE_FAMILY_BEGIN(first_family_page->vm_page_family, current_page_family) {
+        if(memcmp(current_page_family->struct_name, struct_name, MM_MAX_STRUCT_NAME) == 0) {
+            assert(0);
+        }
+        first_empty_index_for_new_page_family++;
+    } ITERATE_PAGE_FAMILY_END(first_family_page->vm_page_family, current_page_family)
+
+    if(first_empty_index_for_new_page_family == MM_MAX_FAMILIES_PER_PAGE) {
+        vm_page_families_t * new_page = (vm_page_families_t*)mm_get_new_vm_page_from_kernel(1);
+        new_page->next = first_family_page;
+        first_family_page = new_page;
+        first_empty_index_for_new_page_family = 0;
+    }
+
+    first_family_page->vm_page_family[first_empty_index_for_new_page_family].size = size;
+    memcpy(&first_family_page->vm_page_family[first_empty_index_for_new_page_family].struct_name, struct_name, MM_MAX_STRUCT_NAME);
+}
+
 void remove_family_vm_page(vm_page_family_t * vm_page_familiy, vm_page_t * vm_page) {
     if(vm_page_familiy->first_vm_page == vm_page) {
         vm_page_familiy->first_vm_page = vm_page_familiy->first_vm_page->next;
@@ -104,40 +138,6 @@ void * xfree(void * block_metadata) {
     if(block->prev && block->prev->is_free)mm_union_free_blocks(block->prev, block);
 
     freeUnusedPage(block);
-}
-
-void mm_instantiate_vm_page_family(char * struct_name, int size) {
-    if(size > SYSTEM_PAGE_SIZE) {
-        printf("Error: %s  to allocate instantiate page with size %d, system page size is %d",
-        __FUNCTION__,size, SYSTEM_PAGE_SIZE
-        );
-
-        exit(1);
-    }
-
-    if(!first_family_page) {
-        first_family_page = (vm_page_families_t*)mm_get_new_vm_page_from_kernel(1);
-        first_family_page->next = NULL;
-    }
-
-    int first_empty_memory_index = 0;
-    vm_page_family_t * curr = NULL;
-    ITERATE_PAGE_FAMILY_BEGIN(first_family_page->vm_page_family, curr) {
-        if(memcmp(curr->struct_name, struct_name, MM_MAX_STRUCT_NAME) == 0) {
-            assert(0);
-        }
-        first_empty_memory_index++;
-    } ITERATE_PAGE_FAMILY_END(first_family_page->vm_page_family, curr)
-
-    if(first_empty_memory_index == MM_MAX_FAMILIES_PER_PAGE) {
-        vm_page_families_t * new_page = (vm_page_families_t*)mm_get_new_vm_page_from_kernel(1);
-        new_page->next = first_family_page;
-        first_family_page = new_page;
-        first_empty_memory_index = 0;
-    }
-
-    first_family_page->vm_page_family[first_empty_memory_index].size = size;
-    memcpy(&first_family_page->vm_page_family[first_empty_memory_index].struct_name, struct_name, MM_MAX_STRUCT_NAME);
 }
 
 vm_page_t * mm_allocate_vm_page(vm_page_family_t * vm_page_family) {
