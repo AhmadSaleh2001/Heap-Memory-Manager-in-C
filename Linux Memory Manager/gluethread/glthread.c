@@ -33,6 +33,7 @@
 
 #include "glthread.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void
 init_glthread(glthread_t *glthread){

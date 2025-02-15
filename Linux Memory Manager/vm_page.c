@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <sys/mman.h>
 #include <memory.h>
+#include <math.h>
 #include "block_metadata.h"
 #include "vm_page.h"
 
@@ -44,6 +45,8 @@ int get_total_number_of_used_blocks(vm_page_t * vm_page) {
 void print_vm_pages(vm_page_family_t * vm_page_family) {
     vm_page_t * curr_vm_page = NULL;
     ITERATE_VM_PAGES_BEGIN(vm_page_family->first_vm_page, curr_vm_page) {
+        int current_page_max_block_size = get_largest_free_block(curr_vm_page);
+        printf("current page max block size: %d\n", current_page_max_block_size);
         block_metadata_t * curr_block = NULL;
         ITERATE_VM_PAGE_BLOCKS_BEGIN(curr_vm_page->blocks, curr_block) {
             print_block_metadata(curr_block);
@@ -51,6 +54,17 @@ void print_vm_pages(vm_page_family_t * vm_page_family) {
         } ITERATE_VM_PAGE_BLOCKS_END(curr_vm_page->blocks, curr_block)
         printf("--------\n");
     } ITERATE_VM_PAGES_END(vm_page_families->first_vm_page, curr_vm_page)
+}
+
+int get_largest_free_block(vm_page_t * vm_page) {
+    int maxFreeBlock = 0;
+    block_metadata_t * current_block_metadata = NULL;
+    ITERATE_VM_PAGE_BLOCKS_BEGIN(vm_page->blocks, current_block_metadata) {
+        if (current_block_metadata->is_free) {
+            maxFreeBlock = fmax(maxFreeBlock, current_block_metadata->block_size);
+        }
+    } ITERATE_VM_PAGE_BLOCKS_END(vm_page->blocks, current_block_metadata)
+    return maxFreeBlock;
 }
 
 // ############ FUNCTIONS FOR VM_PAGE_T ############

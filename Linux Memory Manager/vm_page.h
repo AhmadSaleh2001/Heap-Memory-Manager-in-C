@@ -1,4 +1,5 @@
 #pragma once
+#include "gluethread/glthread.h"
 #include "block_metadata.h"
 
 typedef struct vm_page_family_t;
@@ -35,13 +36,17 @@ typedef struct vm_page_ {
     struct vm_page_ * prev;
     struct vm_page_ * next;
     struct vm_page_family_t * vm_page_familiy;
+    glthread_t glnode; // we can iterate over these reference for this node (bestfit, worstfit, ...)
     block_metadata_t blocks[];
 } vm_page_t;
+
+GLTHREAD_TO_STRUCT(thread_to_vm_page, vm_page_t, glnode, glthreadptr);
 
 typedef struct vm_page_family_ {
     char struct_name[MM_MAX_STRUCT_NAME];
     int size;
     vm_page_t * first_vm_page;
+    glthread_t base_glthread;
 } vm_page_family_t;
 
 // ############ FUNCTIONS FOR VM_PAGE_T ############
@@ -49,6 +54,7 @@ typedef struct vm_page_family_ {
 bool mm_is_page_free(vm_page_t * vm_page);
 int get_total_number_of_created_blocks(vm_page_t * vm_page);
 int get_total_number_of_used_blocks(vm_page_t * vm_page);
+int get_largest_free_block(vm_page_t * vm_page);
 void print_vm_pages(vm_page_family_t * vm_page_family);
 
 // ############ FUNCTIONS FOR VM_PAGE_T ############

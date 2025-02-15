@@ -27,35 +27,42 @@ void print_employee_info(emp_t * emp){
 int main() {
 
     init_mmap();
-    MM_REGISTER_STRUCT(std_t);
+    // MM_REGISTER_STRUCT(std_t);
     MM_REGISTER_STRUCT(emp_t);
     mm_print_registered_page_families();
 
-    std_t * std = xmalloc("std_t");
-    std->age = 19;
-    memcpy(std->name, "ali", 3);
+    // std_t * std = xmalloc("std_t");
+    // std->age = 19;
+    // memcpy(std->name, "ali", 3);
+    
+    emp_t * all_emps_ptrs[10000];
 
-    emp_t * emp = xmalloc("emp_t");
-    emp->eid = 1;
-    memcpy(emp->emp_name, "ahmad", 5);
-    emp->salary = 3000;
-
-
-    emp_t * emps = xcalloc("emp_t", 5);
-    for(int i=0;i<5;i++) {
-        emps[i].eid = i + 100;
-        memcpy(emps[i].emp_name, "aaaa", 4);
-        emps[i].salary = 4000 + i;
+    for(int i=0;i<10000;i++) {
+        emp_t * emps = xcalloc("emp_t", i%30 + 1);
+        all_emps_ptrs[i] = emps;
     }
 
-    print_memory_status();
+
+    // emp_t * emps = xcalloc("emp_t", 5);
+    // for(int i=0;i<5;i++) {
+    //     emps[i].eid = i + 100;
+    //     memcpy(emps[i].emp_name, "aaaa", 4);
+    //     emps[i].salary = 4000 + i;
+    // }
+
+    print_memory_status_using_glthreads();
+    // print_memory_status();
     print_memory_usage();
 
-    xfree(std);
-    xfree(emp);
-    xfree(emps);
+    // xfree(std);
+    // xfree(emp);
+    // xfree(emps);
+    for(int i=0;i<10000;i++) {
+        xfree(all_emps_ptrs[i]);
+    }
 
-    print_memory_status();
+    print_memory_status_using_glthreads();
+    // print_memory_status();
     print_memory_usage();
    
     return 0;
